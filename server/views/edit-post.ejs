@@ -79,7 +79,7 @@
           document.getElementById('message').innerText = "Please Wait...";
           let postId = document.getElementById('id').value;
 
-          // Step 1: Check if new thumbnail is selected for upload
+          // Check if new thumbnail is selected for upload
           const thumbnailInput = document.getElementById('thumbnail');
           let thumbnailUrl = ''
           if (thumbnailInput.files.length > 0) {
@@ -98,19 +98,8 @@
             formData.set('thumbnail', thumbnailUrl);
           }
 
-          // Step 2: Add selected images (existing URLs) to formData
-          //   const selectedImages = document.querySelectorAll('input[name="selectedImages"]:checked');
-          //   selectedImages.forEach(image => {
-          //     formData.append('images', image.value);
-          //     console.log(image.value)
-          //   });
 
-          //   const selectedVideos = document.querySelectorAll('input[name="selectedVideos"]:checked');
-          //   selectedVideos.forEach(video => {
-          //     formData.append('videos', video.value);
-          //   });
-
-          // Step 3: Check if new images are selected for upload
+          // Check if new images are selected for upload
           let allImagesUrl = []
           const selectedImages = document.querySelectorAll('input[name="selectedImages"]:checked');
           selectedImages.forEach(image => {
@@ -143,7 +132,7 @@
           }
 
 
-          // Step 4: Check if new videos are selected for upload
+          // Check if new videos are selected for upload
           let allVideosUrl = []
           const selectedVideos = document.querySelectorAll('input[name="selectedVideos"]:checked');
           selectedVideos.forEach(video => {
@@ -178,7 +167,7 @@
           console.log(allImagesUrl)
           console.log("thumbnailUrl")
           console.log(thumbnailUrl)
-          // Step 5: Edit Post  
+          // Edit Post  
           document.getElementById('message').innerText = "Updating your post!";
           titleInput = document.getElementById('title').value;
           contentInput = document.getElementById('content').value;

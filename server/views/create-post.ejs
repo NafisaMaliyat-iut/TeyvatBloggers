@@ -61,7 +61,7 @@
 
         try {
           document.getElementById('message').innerText = "Please Wait...";
-          // Step 1: Upload Thumbnail
+          // Upload Thumbnail
           const thumbnailFormData = new FormData();
           const thumbnailInput = document.getElementById('thumbnail');
           thumbnailFormData.append('image', thumbnailInput.files[0]);
@@ -75,7 +75,7 @@
           const thumbnailUrl = thumbnailData.photo;
           document.getElementById('message').innerText = "Thumbnail upload complete";
 
-          // Step 2: Upload Images
+          // Upload Images
           const imagesFormData = new FormData();
           const imagesInput = document.getElementById('images');
           for (let i = 0; i < imagesInput.files.length; i++) {
@@ -93,7 +93,7 @@
           console.log(imagesUrl)
           document.getElementById('message').innerText = "Images uploaded!";
 
-          // Step 3: Upload Videos
+          // Upload Videos
           const videosFormData = new FormData();
           const videosInput = document.getElementById('videos');
           for (let i = 0; i < videosInput.files.length; i++) {
@@ -110,7 +110,7 @@
           const videosUrl = videosData.videos;
           document.getElementById('message').innerText = "Videos uploaded!";
 
-            // Step 4: Create Post
+            // Create Post
           document.getElementById('message').innerText = "Posting your content!";
             const postResponse = await fetch('/api/post/create-post', {
               method: 'POST',

@@ -10,7 +10,7 @@ postsData.forEach((post, index) => {
   <% } %>
   <div><span>Posted By <b><%= post.username %></b></span></div>
   <img class="post-img" src="/images/<%= post.thumbnail %>" alt="<%= post.thumbnail %>" />
-  <div><span><b><%= post.likes.length %></b> Likes </span>
+  <div><span><b id="like-count-<%= post._id %>"><%= post.likes.length %></b> Likes </span>
     <span><b id="comment-length-<%= post._id %>"><%= post.comments.length %></b> Comments </span>
   </div>
 
@@ -65,10 +65,13 @@ postsData.forEach((post, index) => {
         console.log('Updated Post:', updatedPost);
         const likebutton = document.getElementById(`like-button-${postId}`)
         likebutton.classList.toggle('liked')
+          const likeCount = document.getElementById(`like-count-${postId}`);
         if (likebutton.innerText === 'Liked') {
           likebutton.innerText = 'Like'
+            likeCount.innerText = Number(likeCount.innerHTML)-1
         } else {
           likebutton.innerText = 'Liked'
+            likeCount.innerText = Number(likeCount.innerHTML)+1
         }
       } else {
         console.error('Error toggling like:', response.statusText);
