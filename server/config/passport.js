@@ -98,10 +98,6 @@ passport.use(
         emails && emails.length > 0
           ? emails[0].value
           : "";
-      const profile_image =
-        photos && photos.length > 0
-          ? photos[0].value
-          : "";
 
       if (googleId !== null) {
         User.findOne({ email })
@@ -119,7 +115,6 @@ passport.use(
                 email: email,
                 googleId: googleId,
                 verifiedStatus: true,
-                profile_image: profile_image,
               });
             }
           })

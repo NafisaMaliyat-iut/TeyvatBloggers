@@ -12,7 +12,12 @@ const {
   updateProfile,
   changePassword,
   logout,
-  googleAuth
+  googleAuth,
+  verifyAccount,
+  getForgotPasswordPage,
+  postForgotPassword,
+  postResetPassword,
+  getResetPasswordPage
 } = require("../controllers/auth.controllers");
 const { uploadImage } = require("../middlewares/media.middleware");
 const {isLoggedIn} = require("../middlewares/auth.middleware")
@@ -25,8 +30,13 @@ router.get("/api/auth/logout", logout);
 router.get("/api/auth/get-usernames", isLoggedIn, getAllUsernames);
 router.patch("/api/auth/update-profile", isLoggedIn, uploadImage.single('image'), updateProfile);
 router.patch("/api/auth/change-password", isLoggedIn, changePassword);
+router.post("/api/auth/forgot-password", postForgotPassword);
+router.get("/verify/:token", verifyAccount);
+router.post('/api/auth/reset-password', postResetPassword);
 
 router.get("/register", getRegisterPage);
 router.get("/login", getLoginPage);
 router.get("/profile", isLoggedIn, getProfilePage);
+router.get("/reset-password", getResetPasswordPage);
+router.get("/forgot-password", getForgotPasswordPage);
 module.exports = router;
