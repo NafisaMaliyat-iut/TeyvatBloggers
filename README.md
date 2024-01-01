@@ -38,7 +38,7 @@ This project is a blogging website for Genshin Players to connect with each othe
 
 ### Installation
 
-1. Clone the repository: `git clone [repository link]`
+1. Clone the repository: `git clone https://github.com/NafisaMaliyat-iut/TeyvatBloggers.git`
 2. Navigate to the project folder: `cd server`
 3. Install dependencies: `npm install`
 4. Include a .env in the project folder that contains MONGO_PASSWORD, MONGO_URI, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET variables
