@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Post</title>
+  <link rel="stylesheet" href="/index.css">
+</head>
+
+<body>
+  <%- include('./partials/navbar.ejs') %>
+  <form enctype="multipart/form-data" id="create-post-form" method="POST">
+    <h1>Create A Post</h1>
+    <p>
+      Share Your Mind With Fellow Teyvat Travelers. Please make sure not to post harmful content.
+      Remember, this platform is meant for positive and constructive discussions.
+      Let's create a welcoming community for everyone!
+    </p>
+    <hr />
+    <div>
+      <label for="title"><b>Title</b></label>
+      <input type="text" name="title" id="title" required />
+    </div>
+    <div>
+      <label for="thumbnail"><b>Thumbnail</b></label>
+      <input type="file" name="thumbnail" id="thumbnail" accept="image/jpg, image/gif, image/jpeg, image/png" required />
+    </div>
+    <div>
+      <label for="content"><b>Content</b></label>
+      <textarea name="content" id="content" required></textarea>
+    </div>
+    <span>Attach any additional media you want your viewers to see</span>
+    <div>
+      <label for="videos"><b>Videos</b></label>
+      <input type="file" name="videos" id="videos" accept=".mp4, .mkv, .avi" multiple />
+    </div>
+    <div>
+      <label for="images"><b>Images</b></label>
+      <input type="file" name="images" id="images" accept="image/png, image/gif, image/jpeg, image/jpg" multiple />
+    </div>
+    <hr />
+    <div>
+      <button type="submit" id="create-post-button">Create Post</button>
+    </div>
+    <span id="message"></span>
+  </form>
+
+
+  <script defer type="text/javascript">
+    document.addEventListener('DOMContentLoaded', () => {
+      const createPostForm = document.getElementById('create-post-form');
+      console.log(createPostForm);
+
+      createPostForm.addEventListener('submit', async (event) => {
+        document.getElementById('message').innerText = "";
+
+        event.preventDefault();
+        document.getElementById('create-post-button').disabled = true;
+        const formData = new FormData(createPostForm);
+
+        try {
+          document.getElementById('message').innerText = "Please Wait...";
+          // Step 1: Upload Thumbnail
+          const thumbnailFormData = new FormData();
+          const thumbnailInput = document.getElementById('thumbnail');
+          thumbnailFormData.append('image', thumbnailInput.files[0]);
+
+          const thumbnailResponse = await fetch('/api/post/upload/single-image', {
+            method: 'POST',
+            body: thumbnailFormData,
+          });
+
+          const thumbnailData = await thumbnailResponse.json();
+          const thumbnailUrl = thumbnailData.photo;
+          document.getElementById('message').innerText = "Thumbnail upload complete";
+
+          // Step 2: Upload Images
+          const imagesFormData = new FormData();
+          const imagesInput = document.getElementById('images');
+          for (let i = 0; i < imagesInput.files.length; i++) {
+            imagesFormData.append('images', imagesInput.files[i]);
+          }
+          document.getElementById('message').innerText = "Uploading Your Images";
+
+          const imagesResponse = await fetch('/api/post/upload/multiple-image', {
+            method: 'POST',
+            body: imagesFormData,
+          });
+
+          const imagesData = await imagesResponse.json();
+          const imagesUrl = imagesData.photo;
+          console.log(imagesUrl)
+          document.getElementById('message').innerText = "Images uploaded!";
+
+          // Step 3: Upload Videos
+          const videosFormData = new FormData();
+          const videosInput = document.getElementById('videos');
+          for (let i = 0; i < videosInput.files.length; i++) {
+            videosFormData.append('videos', videosInput.files[i]);
+          }
+          document.getElementById('message').innerText = "Uploading Your Videos";
+
+          const videosResponse = await fetch('/api/post/upload/multiple-video', {
+            method: 'POST',
+            body: videosFormData,
+          });
+
+          const videosData = await videosResponse.json();
+          const videosUrl = videosData.videos;
+          document.getElementById('message').innerText = "Videos uploaded!";
+
+            // Step 4: Create Post
+          document.getElementById('message').innerText = "Posting your content!";
+            const postResponse = await fetch('/api/post/create-post', {
+              method: 'POST',
+              body: JSON.stringify({
+                title: formData.get('title'),
+                thumbnail: thumbnailUrl,
+                content: formData.get('content'),
+                videos: videosUrl,
+                images: imagesUrl,
+              }),
+              headers: {
+                'Content-Type': 'application/json',
+              },
+            });
+
+            const postData = await postResponse.json();
+            console.log(postData);
+            document.getElementById('message').innerText = "Your post was created successfully!";
+            window.location.href='/view-my-posts'
+        } catch (error) {
+          console.error('Error creating post:', error);
+        } finally {
+          document.getElementById('create-post-button').disabled = false;
+        }
+      });
+    });
+  </script>
+
+</body>
+
+</html>

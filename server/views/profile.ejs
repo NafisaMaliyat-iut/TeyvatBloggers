@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/index.css">
+  <title>Profile</title>
+</head>
+
+<body>
+  <%- include('./partials/navbar.ejs') %>
+
+  <h1>Your Profile</h1>
+  <hr />
+  <span id="message"></span>
+  <form enctype="multipart/form-data" id="update-profile-form" method="POST">
+    <% if (user.profile_image) { %>
+    <img class='profile-img' src='/images/<%= user.profile_image %>' />
+    <% } else { %>
+    <span>You don't seem to have a profile picture yet!</span>
+    <% } %>
+
+    <div>
+      <label for="img"><b>Profile Picture</b></label>
+      <input type="file" name="img" id="img" required />
+    </div>
+    <div>
+      <label for="email"><b>Email</b></label>
+      <span><%= user.email %></span>
+    </div>
+    <div>
+      <label for="name"><b>Username</b></label>
+      <span><%= user.username %></span>
+    </div>
+
+    <hr />
+    <div><button id="update-profile-button">Save Changes</button></div>
+  </form>
+
+  <form id="change-password-form" method="POST">
+    <hr>
+    <div id="message-pass-form"></div>
+    <div>
+      <label for="currentPassword"><b>Current Password</b></label>
+      <input type="password" name="currentPassword" id="currentPassword" required />
+    </div>
+    <div>
+      <label for="newPassword"><b>New Password</b></label>
+      <input type="password" name="newPassword" id="newPassword" required />
+    </div>
+    <div>
+      <label for="confirmPassword"><b>Confirm Password</b></label>
+      <input type="password" name="confirmPassword" id="confirmPassword" required />
+    </div>
+    <div><button id="change-password-button">Change Password</button></div>
+  </form>
+
+
+  <script defer type="text/javascript">
+    document.addEventListener('DOMContentLoaded', () => {
+      const updateProfileForm = document.getElementById('update-profile-form');
+      updateProfileForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        document.getElementById('update-profile-button').disabled = true;
+        try {
+          document.getElementById('message').innerText = "Please Wait...";
+
+          const profileImageFormData = new FormData();
+          const profileImageInput = document.getElementById('img');
+          profileImageFormData.append('image', profileImageInput.files[0]);
+          const updateProfileResponse = await fetch('/api/auth/update-profile', {
+            method: 'PATCH',
+            body: profileImageFormData,
+          });
+
+          const updateProfileData = await updateProfileResponse.json();
+          console.log(updateProfileData);
+
+          document.getElementById('message').innerText = "Your profile was updated successfully!";
+
+          window.location.href = "/profile";
+
+
+        } catch (error) {
+          console.error('Error updating profile:', error);
+          // Handle errors as needed
+        } finally {
+          document.getElementById('update-profile-button').disabled = false;
+        }
+      });
+    });
+  </script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const changePasswordForm = document.getElementById('change-password-form');
+
+      changePasswordForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        document.getElementById('change-password-button').disabled = true;
+
+        try {
+          const formData = new FormData(changePasswordForm);
+          document.getElementById('message-pass-form').innerText = "Please Wait...";
+
+          const changePasswordResponse = await fetch('/api/auth/change-password', {
+            method: 'PATCH',
+            body: JSON.stringify({
+              currentPassword: formData.get('currentPassword'),
+              newPassword: formData.get('newPassword'),
+              confirmPassword: formData.get('confirmPassword'),
+            }),
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
+
+          const changePasswordData = await changePasswordResponse.json();
+          console.log(changePasswordData);
+
+          document.getElementById('message-pass-form').innerText = changePasswordData.message;
+        } catch (error) {
+          console.error('Error changing password:', error);
+          // Handle errors as needed
+        } finally {
+          document.getElementById('change-password-button').disabled = false;
+        }
+      });
+    });
+  </script>
+
+</body>
+
+</html>

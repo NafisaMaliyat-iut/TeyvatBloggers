@@ -1,0 +1,27 @@
+<%
+const getFileType = (url) => {
+  const extension = url.split('.').pop().toLowerCase();
+  if (['mp4', 'webm', 'ogg'].includes(extension)) {
+    return 'video';
+  }
+  return 'image';
+};
+
+const renderMedia = () => {
+  const fileType = getFileType(src);
+  if (fileType === 'video') {
+%>
+<video controls width="300" src="<%= src %>"></video>
+<%
+  } else if (fileType === 'image') {
+%>
+<img src="<%= src %>" alt="<%= title %>">
+<%
+  }
+};
+%>
+
+<h2><%= post.title %></h2>
+<%= renderMedia() %>
+<p><%= post.content %></p>
+<div><button onclick="handleLike()">Like</button></div>

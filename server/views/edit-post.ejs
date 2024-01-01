@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/index.css">
+  <title>Edit Post</title>
+</head>
+
+<body>
+  <%- include('./partials/navbar.ejs') %>
+  <form enctype="multipart/form-data" id="edit-post-form" method="POST">
+    <h1>Edit Your Post</h1>
+    <p>
+      Share Your Mind With Fellow Teyvat Travelers. Please make sure not to post harmful content.
+      Remember, this platform is meant for positive and constructive discussions.
+      Let's create a welcoming community for everyone!
+    </p>
+    <hr />
+    <input type="hidden" id="id" name="id" value="<%= post._id %>" />
+    <div>
+      <label for="title"><b>Title</b></label>
+      <input type="text" name="title" id="title" value="<%= post.title %>" required />
+    </div>
+    <div>
+      <label for="thumbnail"><b>Thumbnail</b></label>
+      <input type="file" name="thumbnail" id="thumbnail" accept="image/jpg, image/gif, image/jpeg, image/png" />
+      <img class="post-img" src="/images/<%= post.thumbnail %>" alt="<%= post.thumbnail %>" />
+    </div>
+    <div>
+      <label for="content"><b>Content</b></label>
+      <textarea name="content" id="content" required><%= post.content %></textarea>
+    </div>
+
+    <div>
+      <label for="videos"><b>Videos</b></label>
+      <% post.videos.forEach(video => { %>
+      <div><input type="checkbox" id="selectedVideos" name="selectedVideos" value="<%= video %>"></div>
+      <div><video class="edit-post-media" src="/videos/<%= video %>"></div>
+      <% }); %>
+    </div>
+    <label for="images"><b>Images</b></label>
+    <div>
+      <% post.images.forEach(image => { %>
+      <div><input type="checkbox" id="selectedImages" name="selectedImages" value="<%= image %>"></div>
+      <div><img class="edit-post-media" src="/images/<%= image %>"></div>
+      <% }); %>
+    </div>
+
+
+    <span>Attach any additional media you want your viewers to see</span>
+    <div>
+      <label for="videos"><b>Videos</b></label>
+      <input type="file" name="videos" id="videos" accept=".mp4, .mkv, .avi" multiple />
+    </div>
+    <div>
+      <label for="images"><b>Images</b></label>
+      <input type="file" name="images" id="images" accept="image/png, image/gif, image/jpeg, image/jpg" multiple />
+    </div>
+    <hr />
+    <div>
+      <button type="submit" id="edit-post-button">Save Changes</button>
+    </div>
+    <span id="message"></span>
+  </form>
+
+  <script defer type="text/javascript">
+    document.addEventListener('DOMContentLoaded', () => {
+      const editPostForm = document.getElementById('edit-post-form');
+
+      editPostForm.addEventListener('submit', async (event) => {
+        document.getElementById('message').innerText = "";
+        event.preventDefault();
+        document.getElementById('edit-post-button').disabled = true;
+        const formData = new FormData();
+
+        try {
+          document.getElementById('message').innerText = "Please Wait...";
+          let postId = document.getElementById('id').value;
+
+          // Step 1: Check if new thumbnail is selected for upload
+          const thumbnailInput = document.getElementById('thumbnail');
+          let thumbnailUrl = ''
+          if (thumbnailInput.files.length > 0) {
+            const thumbnailFormData = new FormData();
+            thumbnailFormData.append('image', thumbnailInput.files[0]);
+
+            const thumbnailResponse = await fetch('/api/post/upload/single-image', {
+              method: 'POST',
+              body: thumbnailFormData,
+            });
+
+            const thumbnailData = await thumbnailResponse.json();
+            thumbnailUrl = thumbnailData.photo;
+            document.getElementById('message').innerText = "Thumbnail upload complete";
+            // Update new thumbnail URL in formData
+            formData.set('thumbnail', thumbnailUrl);
+          }
+
+          // Step 2: Add selected images (existing URLs) to formData
+          //   const selectedImages = document.querySelectorAll('input[name="selectedImages"]:checked');
+          //   selectedImages.forEach(image => {
+          //     formData.append('images', image.value);
+          //     console.log(image.value)
+          //   });
+
+          //   const selectedVideos = document.querySelectorAll('input[name="selectedVideos"]:checked');
+          //   selectedVideos.forEach(video => {
+          //     formData.append('videos', video.value);
+          //   });
+
+          // Step 3: Check if new images are selected for upload
+          let allImagesUrl = []
+          const selectedImages = document.querySelectorAll('input[name="selectedImages"]:checked');
+          selectedImages.forEach(image => {
+            formData.append('images', image.value);
+            allImagesUrl.push(image.value.trim())
+          });
+
+          console.log(allImagesUrl)
+          const imagesInput = document.getElementById('images');
+          if (imagesInput.files.length > 0) {
+            const imagesFormData = new FormData();
+            for (let i = 0; i < imagesInput.files.length; i++) {
+              imagesFormData.append('images', imagesInput.files[i]);
+            }
+
+            document.getElementById('message').innerText = "Uploading Your Images";
+            const imagesResponse = await fetch('/api/post/upload/multiple-image', {
+              method: 'POST',
+              body: imagesFormData,
+            });
+
+            const imagesData = await imagesResponse.json();
+            const imagesUrl = imagesData.photo;
+            document.getElementById('message').innerText = "Images uploaded!";
+            // Append new images URLs to formData
+            for (let i = 0; i < imagesUrl.length; i++) {
+              formData.append('images', imagesUrl[i]);
+              allImagesUrl.push(imagesUrl[i].trim())
+            }
+          }
+
+
+          // Step 4: Check if new videos are selected for upload
+          let allVideosUrl = []
+          const selectedVideos = document.querySelectorAll('input[name="selectedVideos"]:checked');
+          selectedVideos.forEach(video => {
+            formData.append('videos', video.value);
+            allVideosUrl.push(video.value.trim())
+          });
+          const videosInput = document.getElementById('videos');
+          if (videosInput.files.length > 0) {
+            const videosFormData = new FormData();
+            for (let i = 0; i < videosInput.files.length; i++) {
+              videosFormData.append('videos', videosInput.files[i]);
+            }
+
+            document.getElementById('message').innerText = "Uploading Your Videos";
+            const videosResponse = await fetch('/api/post/upload/multiple-video', {
+              method: 'POST',
+              body: videosFormData,
+            });
+
+            const videosData = await videosResponse.json();
+            const videosUrl = videosData.videos;
+            document.getElementById('message').innerText = "Videos uploaded!";
+            // Append new videos URLs to formData
+            for (let i = 0; i < videosUrl.length; i++) {
+              formData.append('videos', videosUrl[i]);
+              allVideosUrl.push(videosUrl[i].trim())
+            }
+          }
+          console.log("allvideosurl")
+          console.log(allVideosUrl);
+          console.log("allImagesUrl")
+          console.log(allImagesUrl)
+          console.log("thumbnailUrl")
+          console.log(thumbnailUrl)
+          // Step 5: Edit Post  
+          document.getElementById('message').innerText = "Updating your post!";
+          titleInput = document.getElementById('title').value;
+          contentInput = document.getElementById('content').value;
+          console.log("titleInput")
+          console.log(titleInput)
+          console.log("contentInput")
+          console.log(contentInput)
+          const editPostResponse = await fetch(`/api/post/edit-post/${postId}`, {
+            method: 'POST',
+            body: JSON.stringify({
+              title: titleInput,
+              thumbnail: thumbnailUrl,
+              content: contentInput,
+              videos: allVideosUrl,
+              images: allImagesUrl,
+            }),
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
+
+          const message = await editPostResponse.json();
+          console.log(message);
+          document.getElementById('message').innerText = message.message;
+          console.log("function ended")
+        } catch (error) {
+          console.error('Error updating post:', error);
+        } finally {
+          document.getElementById('edit-post-button').disabled = false;
+        }
+      });
+    });
+  </script>
+
+
+</body>
+
+</html>

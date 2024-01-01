@@ -2,7 +2,7 @@ const multer = require("multer");
 const { v4: uuidv4 } = require("uuid");
 const path = require("path");
 
-const fileFilter = (req, file, cb) => {
+const imageFilter = (req, file, cb) => {
   console.log("logging img file")
   console.log(file)
   const allowedImageTypes = ["image/jpeg", "image/jpg", "image/png", "image/gif"];
@@ -13,7 +13,7 @@ const fileFilter = (req, file, cb) => {
   }
 };
 
-const postImage = multer.diskStorage({
+const image = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, "uploads/images");
   },
@@ -29,9 +29,9 @@ const postImage = multer.diskStorage({
 });
 
 // Single project image upload
-let uploadPostImage = multer({
-  storage: postImage,
-  fileFilter,
+let uploadImage = multer({
+  storage: image,
+  fileFilter: imageFilter,
 });
 
 const videoFilter = (req, file, cb) => {
@@ -47,7 +47,7 @@ const videoFilter = (req, file, cb) => {
   cb(null, true);
 };
 
-const projectVideo = multer.diskStorage({
+const video = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, "uploads/videos");
   },
@@ -63,12 +63,12 @@ const projectVideo = multer.diskStorage({
 });
 
 // Single project video upload
-let uploadPostVideo = multer({
-  storage: projectVideo,
+let uploadVideo = multer({
+  storage: video,
   fileFilter: videoFilter, 
 });
 
 module.exports = {
-  uploadPostImage,
-  uploadPostVideo,
+  uploadImage,
+  uploadVideo,
 };

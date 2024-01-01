@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/index.css">
+  <title>My Posts</title>
+</head>
+
+<body>
+  <h2><%= username %>'s posts</h2>
+  <%- include('./partials/navbar.ejs') %>
+    <%- include('./partials/postfeed.ejs', { postsData: posts, username: username }) %>
+</body>
+
+</html>

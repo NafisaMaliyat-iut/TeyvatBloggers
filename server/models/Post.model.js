@@ -9,7 +9,7 @@ const PostSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  userId: {
+  username: {
     type: String,
     required: true,
   },
@@ -17,14 +17,35 @@ const PostSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  videos: [
+  videos :[ {
+    type: String,
+  }],
+  images: [{
+    type:String,
+  }],
+  likes: [
     {
-      type: String,
+      username: {
+        type: String,
+      },
+      createdAt: {
+        type: Date,
+        default: Date.now,
+      },
     },
   ],
-  images: [
+  comments: [
     {
-      type: String,      
+      username: {
+        type: String,
+      },
+      comment: {
+        type: String,
+      },
+      createdAt: {
+        type: Date,
+        default: Date.now,
+      },
     },
   ],
 });

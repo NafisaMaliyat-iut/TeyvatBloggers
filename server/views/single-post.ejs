@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/index.css">
+  <title>Post</title>
+</head>
+
+<body>
+  <%- include('./partials/navbar.ejs') %>
+  <div>
+    <input type="hidden" id="id" name="id" value="<%= post._id %>" />
+    <div>
+      <label for="title"><b>Title</b></label>
+      <h1 name="title" id="title"><%= post.title %></h1>
+    </div>
+    <div><span>Posted By <b><%= post.username %></b></span></div>
+
+    <div>
+      <label for="thumbnail"><b>Thumbnail</b></label>
+      <img class="post-img" src="/images/<%= post.thumbnail %>" alt="<%= post.thumbnail %>" />
+    </div>
+    <div>
+      <label for="content"><b>Content</b></label>
+      <span name="content" id="content"><%= post.content %></span>
+    </div>
+
+    <div>
+      <label for="videos"><b>Videos</b></label>
+      <% post.videos.forEach(video => { %>
+      <div><video class="post-img" src="/videos/<%= video %>" disabled></div>
+      <% }); %>
+    </div>
+    <label for="images"><b>Images</b></label>
+    <div>
+      <% post.images.forEach(image => { %>
+      <div><img class="post-img" src="/images/<%= image %>" alt="<%= image %>"></div>
+      <% }); %>
+    </div>
+    <div>
+        <span><b id="like-count"><%= post.likes.length %></b> Likes </span>
+      <span><b id="comment-length"><%= post.comments.length %></b> Comments </span>
+    </div>
+    <div>
+      <% post.comments.forEach(comment => { %>
+      <div id="comment-div">
+        <span id="username"><b><%= comment.username %></b></span>
+        <span id="comment"><%= comment.comment %></span>
+
+        <% if (comment.username === username) { %>
+        <button onclick="toggleEditForm('<%= comment._id %>')">Edit</button>
+        <button onclick="deleteComment('<%= comment._id %>', '<%= post._id %>')">Delete</button>
+
+        <div id="edit-form" class="hidden">
+          <form onsubmit="event.preventDefault(); handleEdit('<%= comment._id %>', '<%= post._id %>')">
+            <input type="text" value="<%= comment.comment %>" id="edit-comment" />
+            <button type="submit">Save</button>
+          </form>
+        </div>
+        <% } %>
+      </div>
+      <% }); %>
+    </div>
+    <div>
+      <button id='like-button' onclick="handleLike('<%= post._id %>')" class="<%= post.likes.some(like => like.username === username) ? 'liked' : '' %>">
+        <%= post.likes.some(like => like.username === username) ? 'Liked' : 'Like' %>
+      </button>
+    </div>
+    <form id="comment-form" method="POST" action="/api/post/single/<%=post._id%>/add-comment">
+      <div>
+        <label for="comment"><b>Comment</b></label>
+        <input class="comment" type="text" name="comment" id="comment" required />
+        <button id="add-comment-button" type="submit">Post</button>
+      </div>
+    </form>
+
+    <hr />
+    <div>
+    </div>
+  </div>
+  <script defer type="text/javascript">
+    async function handleLike(postId) {
+      try {
+        const response = await fetch(`/api/post/${postId}/toggle-like`, {
+          method: 'POST',
+          credentials: 'include',
+        });
+
+        if (response.ok) {
+          const updatedPost = await response.json();
+          console.log('Updated Post:', updatedPost);
+          const likebutton = document.getElementById(`like-button`)
+          const likeCount = document.getElementById('like-count');
+          likebutton.classList.toggle('liked')
+          if (likebutton.innerText === 'Liked') {
+            likebutton.innerText = 'Like'
+            likeCount.innerText = Number(likeCount.innerHTML)-1
+          } else {
+            likeCount.innerText = Number(likeCount.innerHTML)+1
+            likebutton.innerText = 'Liked'
+          }
+        } else {
+          console.error('Error toggling like:', response.statusText);
+        }
+      } catch (error) {
+        console.error('Error toggling like:', error);
+      }
+    }
+  </script>
+
+  <script>
+    function toggleEditForm(commentId) {
+      const editForm = document.getElementById(`edit-form`);
+      editForm.classList.toggle('hidden')
+    }
+
+    async function handleEdit(commentId, postId) {
+      const editedComment = document.getElementById(`edit-comment`).value;
+
+      try {
+        const response = await fetch(`/api/post/${postId}/edit-comment/${commentId}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+          body: JSON.stringify({
+            editedComment
+          }),
+        });
+
+        if (response.ok) {
+          console.log(`Comment ${commentId} updated successfully`);
+          const editedCommentData = await response.json();
+          const updatedComment = editedCommentData.editedComment;
+          document.getElementById(`comment`).innerText = updatedComment;
+          toggleEditForm(commentId);
+        } else {
+          console.error('Error updating comment:', response.statusText);
+        }
+      } catch (error) {
+        console.error('Error updating comment:', error);
+      }
+    }
+  </script>
+
+  <script>
+    async function deleteComment(commentId, postId) {
+      try {
+        const response = await fetch(`/api/post/${postId}/delete-comment/${commentId}`, {
+          method: 'DELETE',
+          credentials: 'include',
+        });
+
+        if (response.ok) {
+          console.log(`Comment ${commentId} deleted successfully`);
+          document.getElementById(`comment-div`).innerHTML = ''
+          document.getElementById(`comment-length`).innerHTML = Number(document.getElementById(`comment-length`).innerHTML) - 1
+
+        } else {
+          console.error('Error deleting comment:', response.statusText);
+        }
+      } catch (error) {
+        console.error('Error deleting comment:', error);
+      }
+    }
+  </script>
+</body>
+
+</html>

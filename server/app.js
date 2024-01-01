@@ -4,8 +4,14 @@ const bodyParser = require("body-parser"); // parse the body of HTTP request
 const cookieParser = require("cookie-parser"); //parse cookies that are sent with HTTP request
 const session = require("express-session");
 const flash = require('express-flash')
+
+const path = require('path')
+app.set('views', path.join(__dirname, 'views'))
+app.set('view engine', 'ejs')
+
 const passport = require("passport");
 require("./config/passport")(passport);
+require("./config/passport-oauth2");
 
 app.use(flash());
 app.use(
@@ -21,6 +27,7 @@ app.use(passport.session());
 
 // To store image/files
 app.use(express.static('./uploads'))
+app.use(express.static('./views/css'));
 
 //Body Parser
 app.use(express.json());
@@ -30,17 +37,20 @@ app.use(express.urlencoded({ extended: false }));
 const cors = require("cors");   
 
 app.use(cookieParser());
-app.use(cors({
-  origin: 'http://localhost:5173',
+app.use(cors(
+  {
+  origin: 'http://localhost:3000',
   credentials: true, 
-}));
+}
+));
 
 // routes
 const authRoutes = require("./routes/auth.routes");
-const postRoutes = require("./routes/post.routes")
+const postRoutes = require("./routes/post.routes");
 
-app.use("/api/auth", authRoutes);
-app.use("/api/post", postRoutes);
+app.use(authRoutes);
+app.use(postRoutes);
+// app.get("https://oauth.pstmn.io/v1/vscode-callback", googleAuth)
 
 //Connect to DB
 const mongoose = require("mongoose");

@@ -44,16 +44,25 @@ const Register = () => {
             setMessage('**Username is taken!**')
         } else {
             try {
-                const resRegister = await newRequest.post('auth/register', 
-                {username: formData.username, password: formData.password, email: formData.email}, configHeader);
+                const resRegister = await newRequest.post('auth/register',
+                    { username: formData.username, password: formData.password, email: formData.email }, configHeader);
                 setMessage(resRegister.data.message)
                 navigate('/login')
             } catch (error) {
                 console.error('Error registering:', error);
-                if(error.response.data.error[0]){
+                if (error.response.data.error[0]) {
                     setMessage(error.response.data.error[0])
                 }
             }
+        }
+    }
+
+    const googleAuth = async ()=>{
+        try {
+        const oauthRes = await newRequest.get('auth/google');
+        console.log(oauthRes)
+        } catch (error) {
+            console.log(error)
         }
     }
     return (
@@ -79,12 +88,13 @@ const Register = () => {
                 <div>
                     <label htmlFor="confirmPassword"><b>Confirm Password</b></label>
                     <input type="password" name="confirmPassword" id="confirmPassword" pattern=".{8,}" required onChange={handleInputChange} /></div>
-                    <span>Your password should contain minimum 8 characters</span>
+                <span>Your password should contain minimum 8 characters</span>
                 <hr />
 
                 <span>Already a user? <Link to="/login">Click here to login</Link></span>
                 <div><button type="submit">Register</button></div>
             </form>
+            <div><button onClick={googleAuth}>Sign In With Google</button></div>
         </>
     )
 }

@@ -1,0 +1,138 @@
+<%
+postsData.forEach((post, index) => {
+%>
+<div>
+  <a href="/view-post/<%= post._id %>">
+    <h2><%= post.title %></h2>
+  </a>
+  <% if (post.username === username) { %>
+  <a href="/edit-post/<%= post._id %>">Edit Post</a>
+  <% } %>
+  <div><span>Posted By <b><%= post.username %></b></span></div>
+  <img class="post-img" src="/images/<%= post.thumbnail %>" alt="<%= post.thumbnail %>" />
+  <div><span><b><%= post.likes.length %></b> Likes </span>
+    <span><b id="comment-length-<%= post._id %>"><%= post.comments.length %></b> Comments </span>
+  </div>
+
+  <div>
+    <% post.comments.forEach(comment => { %>
+    <div id="<%= comment._id %>-div">
+      <span id="<%= comment._id %>-username"><b><%= comment.username %></b></span>
+      <span id="<%= comment._id %>-comment"><%= comment.comment %></span>
+
+      <% if (comment.username === username) { %>
+      <button onclick="toggleEditForm('<%= comment._id %>')">Edit</button>
+      <button onclick="deleteComment('<%= comment._id %>', '<%= post._id %>')">Delete</button>
+
+      <div id="edit-form-<%= comment._id %>" class="hidden">
+        <form onsubmit="event.preventDefault(); handleEdit('<%= comment._id %>', '<%= post._id %>')">
+          <input type="text" value="<%= comment.comment %>" id="edit-comment-<%= comment._id %>" />
+          <button type="submit">Save</button>
+        </form>
+      </div>
+      <% } %>
+    </div>
+    <% }); %>
+  </div>
+  <div>
+    <button id='like-button-<%= post._id %>' onclick="handleLike('<%= post._id %>')" class="<%= post.likes.some(like => like.username === username) ? 'liked' : '' %>">
+      <%= post.likes.some(like => like.username === username) ? 'Liked' : 'Like' %>
+    </button>
+  </div>
+  <form id="comment-form" method="POST" action="/api/post/<%=post._id%>/add-comment">
+    <div>
+      <label for="comment"><b>Comment</b></label>
+      <input type="hidden" id="post-id" value="<%= post._id %>" />
+      <input class="comment" type="text" name="comment" id="comment" required />
+      <button id="add-comment-button" type="submit">Post</button>
+    </div>
+  </form>
+</div>
+<%
+});
+%>
+
+<script defer type="text/javascript">
+  async function handleLike(postId) {
+    try {
+      const response = await fetch(`/api/post/${postId}/toggle-like`, {
+        method: 'POST',
+        credentials: 'include',
+      });
+
+      if (response.ok) {
+        const updatedPost = await response.json();
+        console.log('Updated Post:', updatedPost);
+        const likebutton = document.getElementById(`like-button-${postId}`)
+        likebutton.classList.toggle('liked')
+        if (likebutton.innerText === 'Liked') {
+          likebutton.innerText = 'Like'
+        } else {
+          likebutton.innerText = 'Liked'
+        }
+      } else {
+        console.error('Error toggling like:', response.statusText);
+      }
+    } catch (error) {
+      console.error('Error toggling like:', error);
+    }
+  }
+</script>
+
+<script>
+  function toggleEditForm(commentId) {
+    const editForm = document.getElementById(`edit-form-${commentId}`);
+    editForm.classList.toggle('hidden')
+  }
+
+  async function handleEdit(commentId, postId) {
+    const editedComment = document.getElementById(`edit-comment-${commentId}`).value;
+
+    try {
+      const response = await fetch(`/api/post/${postId}/edit-comment/${commentId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          editedComment
+        }),
+      });
+
+      if (response.ok) {
+        console.log(`Comment ${commentId} updated successfully`);
+        const editedCommentData = await response.json();
+        const updatedComment = editedCommentData.editedComment;
+        document.getElementById(`${commentId}-comment`).innerText = updatedComment;
+        toggleEditForm(commentId);
+      } else {
+        console.error('Error updating comment:', response.statusText);
+      }
+    } catch (error) {
+      console.error('Error updating comment:', error);
+    }
+  }
+</script>
+
+<script>
+  async function deleteComment(commentId, postId) {
+    try {
+      const response = await fetch(`/api/post/${postId}/delete-comment/${commentId}`, {
+        method: 'DELETE',
+        credentials: 'include',
+      });
+
+      if (response.ok) {
+        console.log(`Comment ${commentId} deleted successfully`);
+        document.getElementById(`${commentId}-div`).innerHTML = ''
+        document.getElementById(`comment-length-${postId}`).innerHTML = Number(document.getElementById(`comment-length-${postId}`).innerHTML) - 1
+
+      } else {
+        console.error('Error deleting comment:', response.statusText);
+      }
+    } catch (error) {
+      console.error('Error deleting comment:', error);
+    }
+  }
+</script>

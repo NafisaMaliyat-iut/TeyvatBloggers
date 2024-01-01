@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <link rel="stylesheet" href="/index.css">
+</head>
+<body>
+    <form method="post" action="/api/auth/register">
+        <h1>Register</h1>
+        <p>Please fill in this form to create an account.</p>
+        <hr />
+        <h3 class="message"><b></b></h3>
+        <div>
+            <label for="email"><b>Email</b></label>
+            <input type="email" name="email" id="email" required />
+        </div>
+    
+        <div>
+            <label for="username"><b>Username</b></label>
+            <input type="text" name="username" id="username" required />
+        </div>
+        <span>Note: Your username has to be unique</span>
+        <div>
+            <label for="password"><b>Password</b></label>
+            <input type="password" name="password" id="password" pattern=".{8,}" required />
+        </div>
+        <div>
+            <label for="confirmPassword"><b>Confirm Password</b></label>
+            <input type="password" name="confirmPassword" id="confirmPassword" pattern=".{8,}" required />
+        </div>
+        <span>Your password should contain a minimum of 8 characters</span>
+        <hr />
+    
+        <span>Already a user? <a href="/login">Click here to login</a></span>
+        <div><button type="submit">Register</button></div>
+    </form>
+    <div><button onclick="googleAuth()">Sign In With Google</button></div>
+    
+    <script>
+        async function googleAuth() {
+            try {
+                const response = await fetch('/api/auth/google');
+                // Handle the response as needed
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log(data);
+                } else {
+                    console.error('Google authentication failed');
+                }
+            } catch (error) {
+                console.error(error);
+            }
+        }
+    </script>
+</body>
+</html>

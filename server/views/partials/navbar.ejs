@@ -1,0 +1,26 @@
+<!-- Navbar.ejs -->
+<ul id="navbar">
+    <li><a href="/home">Home</a></li>
+    <li><a href="/create-post">Create A Post</a></li>
+    <li><a href="/view-my-posts">My Posts</a></li>
+    <li><a href="/profile">View Profile</a></li>
+    <li><button onclick="handleLogout()">Logout</button></li>
+</ul>
+<script>
+    async function handleLogout() {
+        try {
+            const response = await fetch('/api/auth/logout', {
+                method: 'GET',
+                credentials: 'include', 
+            });
+
+            if (response.ok) {
+                window.location.href = '/login';
+            } else {
+                console.error('Error logging out:', response.statusText);
+            }
+        } catch (error) {
+            console.error('Error logging out:', error);
+        }
+    }
+</script>
