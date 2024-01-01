@@ -21,6 +21,10 @@ const UserSchema = new mongoose.Schema({
   googleId: {
     type: String,
   },
+  verifiedStatus: {
+    type: Boolean,
+    default: true,
+  },
 });
 
 const User = mongoose.model("User", UserSchema);

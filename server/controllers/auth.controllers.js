@@ -1,7 +1,7 @@
 const User = require("../models/User.model");
 const path = require("path");
 const bcrypt = require("bcrypt");
-const passport = require("passport");
+const passport = require("../config/passport");
 
 const getRegisterPage = async (
   req,
@@ -91,6 +91,14 @@ const postRegister = async (req, res, next) => {
   }
 };
 
+const googleAuth = (req, res, next) => {
+  passport.authenticate('google', {
+      successRedirect: '/home',
+      failureRedirect: '/login',
+      failureFlash: true
+  })(req, res, next);
+}
+
 const postLogin = (req, res, next) => {
   passport.authenticate(
     "local",
@@ -117,6 +125,8 @@ const postLogin = (req, res, next) => {
     }
   )(req, res, next);
 };
+
+
 
 const getAllUsernames = async (
   req,
@@ -211,4 +221,5 @@ module.exports = {
   updateProfile,
   changePassword,
   logout,
+  googleAuth
 };

@@ -39,19 +39,8 @@
     <div><button onclick="googleAuth()">Sign In With Google</button></div>
     
     <script>
-        async function googleAuth() {
-            try {
-                const response = await fetch('/api/auth/google');
-                // Handle the response as needed
-                if (response.ok) {
-                    const data = await response.json();
-                    console.log(data);
-                } else {
-                    console.error('Google authentication failed');
-                }
-            } catch (error) {
-                console.error(error);
-            }
+         function googleAuth() {
+            window.location.href='/auth/google'
         }
     </script>
 </body>

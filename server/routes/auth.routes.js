@@ -11,18 +11,22 @@ const {
   getProfilePage,
   updateProfile,
   changePassword,
-  logout
+  logout,
+  googleAuth
 } = require("../controllers/auth.controllers");
 const { uploadImage } = require("../middlewares/media.middleware");
+const {isLoggedIn} = require("../middlewares/auth.middleware")
 
 router.post("/api/auth/register", postRegister);
 router.post("/api/auth/login", postLogin);
+router.get('/google/callback', googleAuth);
+router.get("/auth/google", googleAuth);
 router.get("/api/auth/logout", logout);
-router.get("/api/auth/get-usernames", getAllUsernames);
-router.patch("/api/auth/update-profile", uploadImage.single('image'), updateProfile);
-router.patch("/api/auth/change-password", changePassword);
+router.get("/api/auth/get-usernames", isLoggedIn, getAllUsernames);
+router.patch("/api/auth/update-profile", isLoggedIn, uploadImage.single('image'), updateProfile);
+router.patch("/api/auth/change-password", isLoggedIn, changePassword);
 
 router.get("/register", getRegisterPage);
 router.get("/login", getLoginPage);
-router.get("/profile", getProfilePage);
+router.get("/profile", isLoggedIn, getProfilePage);
 module.exports = router;

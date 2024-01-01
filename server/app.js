@@ -10,8 +10,7 @@ app.set('views', path.join(__dirname, 'views'))
 app.set('view engine', 'ejs')
 
 const passport = require("passport");
-require("./config/passport")(passport);
-require("./config/passport-oauth2");
+require("./config/passport");
 
 app.use(flash());
 app.use(

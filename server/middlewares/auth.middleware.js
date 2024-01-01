@@ -1,16 +1,9 @@
-const ensureAuthenticated = (req, res, next) => {
-    if (req.isAuthenticated()) {
-      next();
-    } else {
-      res.status(200).json({error: "You do not have access"})
-    }
-  };
 
   const isLoggedIn = (req, res, next) => {
     if (req.user) {
       next();
     } else {
-      res.status(200).json({error: "You do not have access"})
+      res.redirect('/login')
     }
   };
-  module.exports = {ensureAuthenticated, isLoggedIn};
+  module.exports = { isLoggedIn};
