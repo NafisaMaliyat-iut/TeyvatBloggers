@@ -37,7 +37,7 @@
       <label for="videos"><b>Videos</b></label>
       <% post.videos.forEach(video => { %>
       <div><input type="checkbox" id="selectedVideos" name="selectedVideos" value="<%= video %>"></div>
-      <div><video class="edit-post-media" src="/videos/<%= video %>"></div>
+      <div><video class="edit-post-media" controls src="/videos/<%= video %>"></div>
       <% }); %>
     </div>
     <label for="images"><b>Images</b></label>

@@ -11,6 +11,7 @@
 
 .edit-post-media{
   max-width: 50vw;
+  max-height: 300px;
 }
 
 body {

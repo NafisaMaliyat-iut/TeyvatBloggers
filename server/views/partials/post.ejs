@@ -11,7 +11,7 @@ const renderMedia = () => {
   const fileType = getFileType(src);
   if (fileType === 'video') {
 %>
-<video controls width="300" src="<%= src %>"></video>
+<video controls width="300"  src="<%= src %>"></video>
 <%
   } else if (fileType === 'image') {
 %>
