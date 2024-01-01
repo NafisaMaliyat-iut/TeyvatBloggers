@@ -13,13 +13,11 @@
   <div>
     <input type="hidden" id="id" name="id" value="<%= post._id %>" />
     <div>
-      <label for="title"><b>Title</b></label>
       <h1 name="title" id="title"><%= post.title %></h1>
     </div>
     <div><span>Posted By <b><%= post.username %></b></span></div>
 
     <div>
-      <label for="thumbnail"><b>Thumbnail</b></label>
       <img class="post-img" src="/images/<%= post.thumbnail %>" alt="<%= post.thumbnail %>" />
     </div>
     <div>
@@ -28,17 +26,16 @@
     </div>
 
     <div>
-      <label for="videos"><b>Videos</b></label>
-      <% post.videos.forEach(video => { %>
-      <div><video class="post-img" src="/videos/<%= video %>" disabled></div>
-      <% }); %>
-    </div>
-    <label for="images"><b>Images</b></label>
-    <div>
       <% post.images.forEach(image => { %>
       <div><img class="post-img" src="/images/<%= image %>" alt="<%= image %>"></div>
       <% }); %>
     </div>
+    <div>
+      <% post.videos.forEach(video => { %>
+      <div><video class="post-img" src="/videos/<%= video %>" disabled></div>
+      <% }); %>
+    </div>
+    
     <div>
         <span><b id="like-count"><%= post.likes.length %></b> Likes </span>
       <span><b id="comment-length"><%= post.comments.length %></b> Comments </span>

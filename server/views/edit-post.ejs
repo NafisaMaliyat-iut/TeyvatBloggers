@@ -204,6 +204,7 @@
           console.log(message);
           document.getElementById('message').innerText = message.message;
           console.log("function ended")
+          window.location.href='/view-my-posts'
         } catch (error) {
           console.error('Error updating post:', error);
         } finally {
