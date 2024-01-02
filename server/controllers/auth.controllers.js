@@ -15,7 +15,7 @@ const getRegisterPage = async (
   try {
     return res.status(200).render("register");
   } catch (error) {
-    return res.status(404).render("error404", {
+    return res.status(404).json({
       message:
         "cannot access get registration page",
     });
@@ -31,7 +31,7 @@ const getProfilePage = async (req, res, next) => {
       .status(200)
       .render("profile", { user: user });
   } catch (error) {
-    return res.status(404).render("error404", {
+    return res.status(404).json( {
       message: "cannot access get profile page",
     });
   }
@@ -41,7 +41,7 @@ const getLoginPage = async (req, res, next) => {
   try {
     return res.status(200).render("login");
   } catch (error) {
-    return res.status(404).render("error404", {
+    return res.status(404).json( {
       message: "cannot access get login page",
     });
   }
@@ -51,7 +51,7 @@ const getForgotPasswordPage = async(req,res,next)=>{
   try {
     return res.status(200).render("forgot-password");
   } catch (error) {
-    return res.status(404).render("error404", {
+    return res.status(404).json( {
       message: "cannot access get forgot password page",
     });
   }
@@ -61,7 +61,7 @@ const getResetPasswordPage = async (req, res) => {
   try {
     return res.status(200).render("reset-password");
   } catch (error) {
-    return res.status(404).render("error404", {
+    return res.status(404).json({
       message: "cannot access get reset password page",
     });
   }
@@ -76,7 +76,7 @@ const postRegister = async (req, res, next) => {
     });
     if (existingUser) {
       // User already exists
-      return res.status(404).render("error404", {
+      return res.status(404).json({
         message: "User already exists!",
       });
     }
@@ -84,7 +84,7 @@ const postRegister = async (req, res, next) => {
     const emailRegex =
       /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      return res.status(400).render("error404", {
+      return res.status(400).json( {
         message: "Invalid email format",
       });
     }
@@ -141,7 +141,7 @@ const postRegister = async (req, res, next) => {
       "Error during registration:",
       error
     );
-    res.status(404).render("error404", {
+    res.status(404).json( {
       message:
         "Registration failed. Please try again.",
     });
@@ -156,7 +156,7 @@ const verifyAccount = async (req, res, next) => {
       const user = await User.findOne({ verificationToken: token });
 
       if (!user) {
-          return res.status(404).render("error404", { postMessage: "Invalid or expired verification token" });
+          return res.status(404).json( { message: "Invalid or expired verification token" });
       }
 
       // Update the user as verified and remove the token
@@ -168,7 +168,7 @@ const verifyAccount = async (req, res, next) => {
       res.redirect("/login");
   } catch (error) {
       console.error(error);
-      return res.status(500).render("error404", { error: "Internal Server Error" });
+      return res.status(500).json( { error: "Internal Server Error" });
   }
 };
 
@@ -189,23 +189,23 @@ const postLogin = (req, res, next) => {
         console.log("passport facing error");
         return res
           .status(500)
-          .render("error404", {
-            message: "Internal Server Error",
+          .json({
+            error: "Could not authenticate user",
           });
       }
       if (!user) {
         return res
           .status(404)
-          .render("error404", {
-            message: "Invalid credentials!",
+          .json({
+            error: "Invalid credentials!",
           });
       }
       req.logIn(user, (err) => {
         if (err) {
           return res
             .status(500)
-            .render("error404", {
-              message: "Internal Server Error",
+            .json({
+              error: "Internal Server Error",
             });
         }
         return res.redirect("/home");
@@ -320,7 +320,7 @@ const postForgotPassword = async (req, res) => {
       const existingUser = await User.findOne({ email, verifiedStatus: true });
 
       if (!existingUser) {
-          return res.status(404).render("error404", { message: "User not found or not verified" });
+          return res.status(404).json( { message: "User not found or not verified" });
       }
 
       // Generate a reset token
@@ -368,7 +368,7 @@ const postResetPassword = async (req, res, next) => {
       });
 
       if (!user) {
-          return res.status(404).render("error404",{ message: "Invalid or expired reset token" });
+          return res.status(404).json({ message: "Invalid or expired reset token" });
       }
 
       // Update the password and clear reset token
@@ -383,7 +383,7 @@ const postResetPassword = async (req, res, next) => {
       res.redirect("/login");
   } catch (error) {
       console.error(error);
-      return res.status(500).render("error404", { error: "Internal Server Error" });
+      return res.status(500).json({ error: "Internal Server Error" });
   }
 };
 

@@ -11,7 +11,7 @@ const getHomePage = async (req, res, next) => {
       username: username,
     });
   } catch (error) {
-    return res.status(404).render("error404", {
+    return res.status(404).json( {
       message: "error getting home",
     });
   }
@@ -27,7 +27,7 @@ const viewMyPosts = async (req, res, next) => {
       username: username,
     });
   } catch (error) {
-    return res.status(404).render("error404", {
+    return res.status(404).json({
       message: "error getting home",
     });
   }
@@ -48,7 +48,7 @@ const viewSinglePostPage = async (
       username: username,
     });
   } catch (error) {
-    return res.status(404).render("error404", {
+    return res.status(404).json( {
       message: "error getting single post page",
     });
   }
@@ -58,7 +58,7 @@ const createPostPage = async (req, res, next) => {
   try {
     return res.status(200).render("create-post");
   } catch (error) {
-    return res.status(404).render("error404", {
+    return res.status(404).json( {
       message: "error getting create post page",
     });
   }
@@ -72,7 +72,7 @@ const editPostPage = async (req, res, next) => {
       .status(200)
       .render("edit-post", { post: post });
   } catch (error) {
-    return res.status(404).render("error404", {
+    return res.status(404).json( {
       message: "error getting create post page",
     });
   }
@@ -85,7 +85,7 @@ const getAllPosts = async (req, res, next) => {
   } catch (error) {
     // Handle errors
     console.error("Error fetching posts:", error);
-    return res.status(404).render("error404", {
+    return res.status(404).json( {
       message: "error getting posts",
     });
   }
@@ -300,7 +300,7 @@ const addCommentLogic = async (req, res) => {
   const user = await User.findById(req.user.id);
 
   if (!user) {
-    return res.status(404).render("error404", {
+    return res.status(404).json( {
       message: "error finding user",
     });
   }
@@ -309,7 +309,7 @@ const addCommentLogic = async (req, res) => {
   const post = await Post.findById(postId);
 
   if (!post) {
-    return res.status(404).render("error404", {
+    return res.status(404).json( {
       message: "error finding post",
     });
   }
@@ -327,7 +327,7 @@ const addComment = async (req, res) => {
     const user = await User.findById(req.user.id);
 
     if (!user) {
-      return res.status(404).render("error404", {
+      return res.status(404).json( {
         message: "error finding user",
       });
     }
@@ -336,7 +336,7 @@ const addComment = async (req, res) => {
     const post = await Post.findById(postId);
 
     if (!post) {
-      return res.status(404).render("error404", {
+      return res.status(404).json({
         message: "error finding post",
       });
     }
@@ -348,7 +348,7 @@ const addComment = async (req, res) => {
     res.redirect("/home");
   } catch (error) {
     console.error("Error adding comment:", error);
-    return res.status(500).render("error404", {
+    return res.status(500).json( {
       message: "error posting comment",
     });
   }
@@ -364,7 +364,7 @@ const addCommentFromSingleBlog = async (
     res.redirect(`/view-post/${postId}`);
   } catch (error) {
     console.error("Error adding comment:", error);
-    return res.status(500).render("error404", {
+    return res.status(500).json( {
       message: "error posting comment",
     });
   }
