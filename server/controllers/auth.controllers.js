@@ -110,7 +110,8 @@ const postRegister = async (req, res, next) => {
       from: "teamtento336572@gmail.com",
       to: email,
       subject: "Account Verification",
-      html: `<p>Click the following link to verify your account: <a href="http://localhost:3000/verify/${verificationToken}">Verify</a></p>`,
+      // html: `<p>Click the following link to verify your account: <a href="http://localhost:3000/verify/${verificationToken}">Verify</a></p>`,
+      html: `<p>Click the following link to verify your account: <a href="https://tevyat-bloggers.onrender.com/verify/${verificationToken}">Verify</a></p>`,
     };
 
     transporter.sendMail(
@@ -336,7 +337,8 @@ const postForgotPassword = async (req, res) => {
         from: "teamtento336572@gmail.com",
         to: email,
         subject: "Reset Password",
-        html: `<p>Click the following link to reset your password: <a href="http://localhost:3000/reset-password/?token=${resetToken}">Verify</a></p>`,
+        // html: `<p>Click the following link to reset your password: <a href="http://localhost:3000/reset-password/?token=${resetToken}">Verify</a></p>`,
+        html: `<p>Click the following link to reset your password: <a href="https://tevyat-bloggers.onrender.com/reset-password/?token=${resetToken}">Verify</a></p>`,
       };
 
       transporter.sendMail(mailOptions, (error, info) => {

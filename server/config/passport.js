@@ -76,7 +76,8 @@ passport.use(
       clientSecret:
         process.env.GOOGLE_CLIENT_SECRET,
       callbackURL:
-        "http://localhost:3000/google/callback",
+        // "http://localhost:3000/google/callback",
+        "https://tevyat-bloggers.onrender.com/google/callback",
       passReqToCallback: true,
       scope: ["profile", "email"],
     },
